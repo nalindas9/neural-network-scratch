@@ -54,7 +54,36 @@ def layer_sizes(X, Y):
     n_H - size of hidden layer
     n_Y - size of output layer
     """
-    print("X Shape: ", X.shape, "Y Shape: ", Y.shape)
+    n_X = X.shape[0]
+    n_H = 4
+    n_Y = Y.shape[0]
+    
+    return n_X, n_H, n_Y
+    
+# Initialize Model Parameters
+def initialize_parameters(n_X, n_H, n_Y):
+    """
+    Arguments:
+    n_X - size of input layer
+    n_H - size of hidden layer
+    n_Y - size of output layer
+    Returns:
+    params - Dictionary containing weights and biases
+            W1 -- Weight matrix of shape (n_H, n_X)
+            b1 -- Bias matrix of shape (n_H, 1)
+            W2 -- Weight matrix of shape (n_Y, n_H)
+            b2 -- Bias matrix of shape (n_Y, 1)
+    """
+    W1 = np.random.randn(n_H, n_X)
+    b1 = np.zeros((n_H, 1))
+    W2 = np.random.randn(n_Y, n_H)
+    b2 = np.zeros((n_Y, 1))
+    
+    params = {"W1": W1, 
+              "b1": b1,
+              "W2": W2,
+              "b2": b2}
+    return params
     
 
 def main():
@@ -66,7 +95,10 @@ def main():
     # Visualize the dataset
     plt.scatter(X[0, :], X[1, :], c=Y, s=40, cmap=plt.cm.Spectral);
     plt.show()
-    layer_sizes(X, Y)
+    n_X, n_H, n_Y = layer_sizes(X, Y)
+    print("Size of I/P layer: {}, hidden layer: {}, O/P layer: {}".format(n_X, n_H, n_Y))
+    params = initialize_parameters(n_X, n_H, n_Y)
+    print("Weights and biases matrix initialized as: {}".format(params))
     
 if __name__ ==  '__main__':
     main()
