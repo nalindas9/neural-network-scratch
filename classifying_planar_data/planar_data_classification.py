@@ -13,6 +13,7 @@ University of Maryland, College Park
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn import datasets
+import utils
 
 # Planar flower dataset definition
 def load_dataset():
@@ -59,6 +60,7 @@ def layer_sizes(X, Y):
     n_Y = Y.shape[0]
     
     return n_X, n_H, n_Y
+
     
 # Initialize Model Parameters
 def initialize_parameters(n_X, n_H, n_Y):
@@ -74,9 +76,9 @@ def initialize_parameters(n_X, n_H, n_Y):
             W2 -- Weight matrix of shape (n_Y, n_H)
             b2 -- Bias matrix of shape (n_Y, 1)
     """
-    W1 = np.random.randn(n_H, n_X)
+    W1 = np.random.randn(n_H, n_X)*0.01
     b1 = np.zeros((n_H, 1))
-    W2 = np.random.randn(n_Y, n_H)
+    W2 = np.random.randn(n_Y, n_H)*0.01
     b2 = np.zeros((n_Y, 1))
     
     params = {"W1": W1, 
@@ -84,7 +86,33 @@ def initialize_parameters(n_X, n_H, n_Y):
               "W2": W2,
               "b2": b2}
     return params
+
+# Forward Propagation
+def forward_propagation(X, params):
+    """
+    Args:
+    X -- Input data of shape (n_x, m) n_x -> no of input nodes; m -> no of training examples
+    params -- Dictionary with the initialized weights and the biases
+    Returns:
+    A2 -- Sigmoid output of 2nd or output layer of shape (n_y, 1)
+    neuron_functions -- Dictionary containing the computed linear function Z and activation function A for each neuron
+    """
+    W1 = params["W1"]
+    b1 = params["b1"]
+    W2 = params["W2"]
+    b2 = params["b2"]
     
+    # Compute the linear function Z and sigmoid Activation function for each neuron
+    Z1 = np.dot(W1,X) + b1
+    A1 = utils.sigmoid(Z1)
+    Z2 = np.dot(W2,A1) + b2
+    A2 = utils.sigmoid(Z2)
+    
+    neuron_functions = {"Z1": Z1,
+                        "A1": A1,
+                        "Z2": Z2,
+                        "A2": A2}
+    return A2, neuron_functions
 
 def main():
     X, Y = load_dataset()
@@ -99,6 +127,8 @@ def main():
     print("Size of I/P layer: {}, hidden layer: {}, O/P layer: {}".format(n_X, n_H, n_Y))
     params = initialize_parameters(n_X, n_H, n_Y)
     print("Weights and biases matrix initialized as: {}".format(params))
+    A2, neuron_functions = forward_propagation(X, params)
+    print("A2: ", A2)
     
 if __name__ ==  '__main__':
     main()
