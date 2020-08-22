@@ -94,7 +94,7 @@ def forward_propagation(X, params):
     X -- Input data of shape (n_x, m) n_x -> no of input nodes; m -> no of training examples
     params -- Dictionary with the initialized weights and the biases
     Returns:
-    A2 -- Sigmoid output of 2nd or output layer of shape (n_y, 1)
+    A2 -- Sigmoid output of 2nd or output layer of shape (n_y, m)
     neuron_functions -- Dictionary containing the computed linear function Z and activation function A for each neuron
     """
     W1 = params["W1"]
@@ -114,6 +114,36 @@ def forward_propagation(X, params):
                         "A2": A2}
     return A2, neuron_functions
 
+# Compute cost function
+def compute_cost(A2, Y):
+    """
+    Args:
+    A2 -- Predicted output value using sigmoid activation of shape (n_y, m) 
+    Y -- Labels of shape (n_y, m)
+    
+    Returns:
+    cost -- Average of cross entropy cost over m training examples
+    """
+    m = Y.shape[1] # number of training examples
+
+    logprob = Y*np.log(A2) + (1-Y)*np.log(1-A2)
+    cost = -(1/m)*np.sum(logprob)
+
+    return cost
+
+# Backward Propagation
+def backward_propagation(neuron_functions):
+    """
+    Args:
+    neuron_functions -- Dictionary of neuron linear and action functions computed 
+                                                        during forward propagation
+    Returns:
+    gradients - Dictionary with gradients of Loss w.r.t the weights and biases 
+    """
+    m = X.shape[1]
+
+
+
 def main():
     X, Y = load_dataset()
     print('Loaded the planar flower dataset.')
@@ -128,7 +158,8 @@ def main():
     params = initialize_parameters(n_X, n_H, n_Y)
     print("Weights and biases matrix initialized as: {}".format(params))
     A2, neuron_functions = forward_propagation(X, params)
-    print("A2: ", A2)
-    
+    print("A2 shape: ", A2.shape)
+    cost = compute_cost(A2, Y)
+    print('Cost: ', cost)
 if __name__ ==  '__main__':
     main()
