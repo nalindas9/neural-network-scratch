@@ -132,7 +132,7 @@ def compute_cost(A2, Y):
     return cost
 
 # Backward Propagation
-def backward_propagation(neuron_functions):
+def backward_propagation(neuron_functions, params, X, Y):
     """
     Args:
     neuron_functions -- Dictionary of neuron linear and action functions computed 
@@ -141,8 +141,26 @@ def backward_propagation(neuron_functions):
     gradients - Dictionary with gradients of Loss w.r.t the weights and biases 
     """
     m = X.shape[1]
+    
+    W1 = params["W1"]
+    W2 = params["W2"]
+    A1 = neuron_functions["A1"]
+    A2 = neuron_functions["A2"]
 
+    dZ2 = A2 - Y # (n_y, m)
+    dW2 = (1/m)*np.dot(dZ2, A1.T)
+    db2 = (1/m)*np.sum(dZ2, axis = 1, keepdims = True)
+    dZ1 = np.dot(W2.T,dZ2)*(1-np.power(A1, 2))
+    dW1 = (1/m)*np.dot(dZ1, X.T) 
+    db1 = (1/m)*np.sum(dZ1, axis = 1, keepdims = True)
 
+    gradients = {
+        "dW1": dW1,
+        "db1": db1,
+        "dW2": dW2,
+        "db2": db2
+    }
+    return gradients
 
 def main():
     X, Y = load_dataset()
@@ -161,5 +179,7 @@ def main():
     print("A2 shape: ", A2.shape)
     cost = compute_cost(A2, Y)
     print('Cost: ', cost)
+    gradients = backward_propagation(neuron_functions, params, X, Y)
+    print("Gradients: ", gradients["db2"].shape)
 if __name__ ==  '__main__':
     main()
