@@ -14,6 +14,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from sklearn import datasets
 import utils
+import time
 
 # Planar flower dataset definition
 def load_dataset():
@@ -162,6 +163,94 @@ def backward_propagation(neuron_functions, params, X, Y):
     }
     return gradients
 
+def update_parameters(params, gradients, learning_rate=1.2):
+    """
+    Updates parameters using gradient descent update rule
+    
+    Args:
+    params -- Dictionary containing weights and biases
+            W1 -- Weight matrix of shape (n_H, n_X)
+            b1 -- Bias matrix of shape (n_H, 1)
+            W2 -- Weight matrix of shape (n_Y, n_H)
+            b2 -- Bias matrix of shape (n_Y, 1)
+    gradients -- Dictionary with gradients of Loss w.r.t the weights and biases 
+    learning_rate - Learning rate for gradient descent
+    Returns:
+    params -- Updated weights and biases 
+    """
+    W1 = params["W1"]
+    b1 = params["b1"]
+    W2 = params["W2"]
+    b2 = params["b2"]
+
+    dW1 = gradients["dW1"]
+    db1 = gradients["db1"]
+    dW2 = gradients["dW2"]
+    db2 = gradients["db2"]    
+
+    # Update parameters
+    W1 = W1-learning_rate*dW1
+    b1 = b1-learning_rate*db1
+    W2 = W2-learning_rate*dW2
+    b2 = b2-learning_rate*db2
+
+    params = {"W1": W1, 
+            "b1": b1,
+            "W2": W2,
+            "b2": b2}
+    
+    return params
+
+def nn_model_train(X, Y, num_iterations = 10000, print_cost=False, print_cost_itr=1000):
+    """
+    Train the Neural Network
+    
+    Args:
+    X -- Input dataset
+    Y -- Labels
+    num_iterations -- Number of training iterations
+    print_cost -- Set True to print cost during training
+    print_cost_itr -- Print cost after every "print_cost_itr" iterations
+
+    Returns:
+    params -- Learned weights and biases after training
+    """
+    # Get NN layer sizes
+    n_X, n_H, n_Y = layer_sizes(X, Y)
+    print("Size of I/P layer: {}, hidden layer: {}, O/P layer: {}".format(n_X, n_H, n_Y))
+
+    # Initialize weights and biases
+    params = initialize_parameters(n_X, n_H, n_Y)
+    print("Weights and biases matrix initialized as: {}".format(params))
+
+    # Training loop
+    for i in range(0, num_iterations):
+        start_time = time.time()
+        # Forward Propagation
+        A2, neuron_functions = forward_propagation(X, params)
+        # Cost function
+        cost = compute_cost(A2, Y)
+        # Backpropagation
+        gradients = backward_propagation(neuron_functions, params, X, Y)
+        # Gradient descent update weights and biases
+        params = update_parameters(params, gradients)
+
+        # Print cost every "print_cost_itr" iterations
+        if print_cost and i%print_cost_itr == 0:
+            print('Cost after {} iterations: {}'.format(i, cost))
+
+    end_time = time.time()
+
+    training_time = start_time-end_time
+    print('Training time: ', training_time)
+
+    return params
+
+
+
+
+
+
 def main():
     X, Y = load_dataset()
     print('Loaded the planar flower dataset.')
@@ -171,15 +260,9 @@ def main():
     # Visualize the dataset
     plt.scatter(X[0, :], X[1, :], c=Y, s=40, cmap=plt.cm.Spectral);
     plt.show()
-    n_X, n_H, n_Y = layer_sizes(X, Y)
-    print("Size of I/P layer: {}, hidden layer: {}, O/P layer: {}".format(n_X, n_H, n_Y))
-    params = initialize_parameters(n_X, n_H, n_Y)
-    print("Weights and biases matrix initialized as: {}".format(params))
-    A2, neuron_functions = forward_propagation(X, params)
-    print("A2 shape: ", A2.shape)
-    cost = compute_cost(A2, Y)
-    print('Cost: ', cost)
-    gradients = backward_propagation(neuron_functions, params, X, Y)
-    print("Gradients: ", gradients["db2"].shape)
+    params = nn_model_train(X,Y,print_cost=True)
+    print('Learned weights and biases: ', params)
+
+
 if __name__ ==  '__main__':
     main()
