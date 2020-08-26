@@ -15,10 +15,13 @@ import matplotlib.pyplot as plt
 from sklearn import datasets
 import utils
 import time
+from tensorboardX import SummaryWriter
 
-# Planar flower dataset definition
+
 def load_dataset():
     """
+    Planar flower training dataset definition
+
     Arguments:
     None
     Returns:
@@ -26,6 +29,36 @@ def load_dataset():
     Y - labels of shape (output size, number of examples)
     """
     np.random.seed(1)
+    m = 400 # number of examples
+    N = int(m/2) # number of points per class
+    D = 2 # dimensionality
+    X = np.zeros((m,D)) # data matrix where each row is a single example
+    Y = np.zeros((m,1), dtype='uint8') # labels vector (0 for red, 1 for blue)
+    a = 4 # maximum ray of the flower
+
+    for j in range(2):
+        ix = range(N*j,N*(j+1))
+        t = np.linspace(j*3.12,(j+1)*3.12,N) + np.random.randn(N)*0.2 # theta
+        r = a*np.sin(4*t) + np.random.randn(N)*0.2 # radius
+        X[ix] = np.c_[r*np.sin(t), r*np.cos(t)]
+        Y[ix] = j
+        
+    X = X.T
+    Y = Y.T
+   
+    return X, Y
+
+def load_test_dataset():
+    """
+    Planar flower test dataset definition
+
+    Arguments:
+    None
+    Returns:
+    X - input feature dataset of shape (input size, number of examples)
+    Y - labels of shape (output size, number of examples)
+    """
+    np.random.seed(5)
     m = 400 # number of examples
     N = int(m/2) # number of points per class
     D = 2 # dimensionality
@@ -57,7 +90,7 @@ def layer_sizes(X, Y):
     n_Y - size of output layer
     """
     n_X = X.shape[0]
-    n_H = 4
+    n_H = 15
     n_Y = Y.shape[0]
     
     return n_X, n_H, n_Y
@@ -215,6 +248,8 @@ def nn_model_train(X, Y, num_iterations = 10000, print_cost=False, print_cost_it
     Returns:
     params -- Learned weights and biases after training
     """
+    # Setup tensorboard for logging
+    writer = SummaryWriter('runs/planar_data_classification')
     # Get NN layer sizes
     n_X, n_H, n_Y = layer_sizes(X, Y)
     print("Size of I/P layer: {}, hidden layer: {}, O/P layer: {}".format(n_X, n_H, n_Y))
@@ -233,35 +268,62 @@ def nn_model_train(X, Y, num_iterations = 10000, print_cost=False, print_cost_it
         # Backpropagation
         gradients = backward_propagation(neuron_functions, params, X, Y)
         # Gradient descent update weights and biases
-        params = update_parameters(params, gradients)
+        params = update_parameters(params, gradients, learning_rate=1.2)
 
         # Print cost every "print_cost_itr" iterations
         if print_cost and i%print_cost_itr == 0:
             print('Cost after {} iterations: {}'.format(i, cost))
+            writer.add_scalar('Cost/train', cost, i)
 
+    print('Cost after {} iterations: {}'.format(i, cost))
+    writer.add_scalar('Cost/train', cost, i)
     end_time = time.time()
 
-    training_time = start_time-end_time
+    training_time = end_time - start_time
     print('Training time: ', training_time)
 
     return params
 
 
+def predict(X, Y, params):
+    """
+    Predict class on each example in test data
 
+    Arguments:
+    X -- Input dataset
+    params -- Learned weights and biases after training
+    
+    Returns:
+    prediction -- Predicted class for each example in test dataset
+    """
+    A2, neuron_functions = forward_propagation(X, params)
+    prediction = A2 > 0.5 # if A2 for each example > 0.5, then 1 else 0 
+    
+    # Print Accuracy
+    print('Accuracy: {}%'. format(float((np.dot(Y, prediction.T)+np.dot(1-Y, 1-prediction.T))/float(Y.size))*100))
 
-
+    return prediction
 
 def main():
     X, Y = load_dataset()
+    X_t, Y_t = load_test_dataset()
     print('Loaded the planar flower dataset.')
-    print('Input features: ', X)
+    print('Input training features: ', X)
     print('')
-    print('Labels Red = 0, Blue = 1: ', Y)
-    # Visualize the dataset
+    print('Training Labels Red = 0, Blue = 1: ', Y)
+    print('Input test features: ', X)
+    print('')
+    print('Test Labels Red = 0, Blue = 1: ', Y)
+    # Visualize train dataset
     plt.scatter(X[0, :], X[1, :], c=Y, s=40, cmap=plt.cm.Spectral);
     plt.show()
-    params = nn_model_train(X,Y,print_cost=True)
+    # Visualize test dataset
+    plt.scatter(X_t[0, :], X_t[1, :], c=Y_t, s=40, cmap=plt.cm.Spectral);
+    plt.show()
+    params = nn_model_train(X,Y, 2000 ,print_cost=True)
     print('Learned weights and biases: ', params)
+    prediction = predict(X_t, Y_t, params)
+    print('Predictions: ', prediction)
 
 
 if __name__ ==  '__main__':
