@@ -12,7 +12,7 @@ This is the repository for the implemention of different neural networks from sc
 ### Model Architecture: 2-Layer NN with 1 hidden layer
 #### Problem Type: Planar Data Classification
 #### ---------------------- Training Flower Dataset -------------------------------------------- Test Flower Dataset ----------------------
-<img src = "images/flower_dataset.png" width="420"><img src = "images/flower_test_dataset.png" width="420">
+<img src = "images/flower_dataset.png" width="410"><img src = "images/flower_test_dataset.png" width="410">
 
 Classes: Red = 0, Blue = 1
 
