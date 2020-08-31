@@ -8,9 +8,11 @@ This is the repository for the implemention of different neural networks from sc
 - TensorboardX
 - Scikit Learn
 - Matplotlib
-## Neural Networks
-### Model Architecture: 2-Layer NN with 1 hidden layer
-#### Problem Type: Planar Data Classification
+
+## Planar Data Classification
+### Network Architecture:
+ - Total layers: 2
+ - Hidden layers: 1
 #### ---------------------- Training Flower Dataset -------------------------------------------- Test Flower Dataset ----------------------
 <img src = "images/flower_dataset.png" width="410"><img src = "images/flower_test_dataset.png" width="410">
 
@@ -22,12 +24,12 @@ Classes: Red = 0, Blue = 1
 3. Epochs: 10000, Hidden layer size: 10, Learning Rate: 1.2, Test Accuracy: 72.25%
 4. Epochs: 2000, Hidden layer size: 15, Learning Rate: 1.2, Test Accuracy: 85.25%
 
-## How to run
-1. Classifying planar data - 2-Layer NN with 1 hidden layer
+### How to run
 ```
 python3 planar_data_classification.py
 ```
-## Contributors
+# Contributors
 Nalin Das
+
 # References
 - [Coursera - Neural Network and Deep Learning](https://www.coursera.org/learn/neural-networks-deep-learning)
