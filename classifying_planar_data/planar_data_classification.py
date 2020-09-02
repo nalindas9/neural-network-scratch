@@ -1,9 +1,6 @@
 """
 Planar data classification using 1 hidden layer
 
-Reference:
-1. Coursera Neural Networks and Deep Learning
-
 Authors:
 Nalin Das (nalindas9@gmail.com)
 Graduate Student pursuing Masters in Robotics,
@@ -234,7 +231,7 @@ def update_parameters(params, gradients, learning_rate=1.2):
     
     return params
 
-def nn_model_train(X, Y, num_iterations = 10000, print_cost=False, print_cost_itr=1000):
+def nn_model_train(X, Y, num_iterations = 10000, lr=1.2, print_cost=False, print_cost_itr=1000):
     """
     Train the Neural Network
     
@@ -268,7 +265,7 @@ def nn_model_train(X, Y, num_iterations = 10000, print_cost=False, print_cost_it
         # Backpropagation
         gradients = backward_propagation(neuron_functions, params, X, Y)
         # Gradient descent update weights and biases
-        params = update_parameters(params, gradients, learning_rate=1.2)
+        params = update_parameters(params, gradients, learning_rate=lr)
 
         # Print cost every "print_cost_itr" iterations
         if print_cost and i%print_cost_itr == 0:
@@ -320,7 +317,7 @@ def main():
     # Visualize test dataset
     plt.scatter(X_t[0, :], X_t[1, :], c=Y_t, s=40, cmap=plt.cm.Spectral);
     plt.show()
-    params = nn_model_train(X,Y, 2000 ,print_cost=True)
+    params = nn_model_train(X, Y, 2000, 6.0, print_cost=True)
     print('Learned weights and biases: ', params)
     prediction = predict(X_t, Y_t, params)
     print('Predictions: ', prediction)
