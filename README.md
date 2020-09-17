@@ -1,4 +1,4 @@
-# neural-networks
+# neural-network-scratch
 [![License:MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/nalindas9/neural-networks/blob/master/LICENSE)
 ## About
 This is the repository for the implemention of a simple two layer neural network from scratch.
