@@ -1,7 +1,7 @@
 # neural-networks
 [![License:MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/nalindas9/neural-networks/blob/master/LICENSE)
 ## About
-This is the repository for the implemention of different neural networks from scratch.
+This is the repository for the implemention of a simple two layer neural network from scratch.
 ## System Dependencies
 - Ubuntu 16.04 (Linux)
 - Python 3
